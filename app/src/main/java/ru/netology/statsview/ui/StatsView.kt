@@ -49,7 +49,16 @@ class StatsView @JvmOverloads constructor(
             invalidate()
         }
 
+    var sum: Float = data.sum()
+        set(value) {
+            if (value >= data.sum()) {
+                field = value
+            }
+            invalidate()
+        }
+
     private var total: Float = 0.0f
+
 
     private var percentages: List<Float> = emptyList()
 
@@ -100,15 +109,16 @@ class StatsView @JvmOverloads constructor(
         val fullCircle = 360F
         var angle: Float
 
-        if (total == 1F) {
+        if (sum == 1F) {
             paint.color = Color.parseColor("#808080")
-        canvas.drawArc(oval, startAngle, fullCircle, false, paint)}
+            canvas.drawArc(oval, startAngle, fullCircle, false, paint)
+        }
 
 
         percentages.forEachIndexed { index, datum ->
 
             angle = datum * 360F  // угол поворота для каждого элемента
-            if (data.sum() <= total) {
+            if (data.sum() <= sum) {
                 paint.color = colorsList.getOrElse(index) { generateRandomColor() }
             }
 
@@ -119,10 +129,8 @@ class StatsView @JvmOverloads constructor(
 
 
 
-        if (total <= 1) {
-            paint.color =
-                colorsList.getOrNull(data.withIndex().firstOrNull()?.index!!)
-                    ?: generateRandomColor()
+        if (sum >= 1) {
+            paint.color = colorsList.getOrNull(data.withIndex().firstOrNull()?.index!!) ?: generateRandomColor()
         }
 
         canvas.drawPoint(center.x, center.y - radius, paint)
