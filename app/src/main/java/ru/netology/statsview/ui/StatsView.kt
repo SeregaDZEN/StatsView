@@ -49,7 +49,10 @@ class StatsView @JvmOverloads constructor(
             invalidate()
         }
 
+
+
     private var total: Float = 0.0f
+
 
     private var percentages: List<Float> = emptyList()
 
@@ -102,7 +105,8 @@ class StatsView @JvmOverloads constructor(
 
         if (total == 1F) {
             paint.color = Color.parseColor("#808080")
-        canvas.drawArc(oval, startAngle, fullCircle, false, paint)}
+            canvas.drawArc(oval, startAngle, fullCircle, false, paint)
+        }
 
 
         percentages.forEachIndexed { index, datum ->
@@ -119,10 +123,8 @@ class StatsView @JvmOverloads constructor(
 
 
 
-        if (total <= 1) {
-            paint.color =
-                colorsList.getOrNull(data.withIndex().firstOrNull()?.index!!)
-                    ?: generateRandomColor()
+        if (total >= 1) {
+            paint.color = colorsList.getOrNull(data.withIndex().firstOrNull()?.index!!) ?: generateRandomColor()
         }
 
         canvas.drawPoint(center.x, center.y - radius, paint)
