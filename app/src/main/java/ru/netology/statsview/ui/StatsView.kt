@@ -3,6 +3,7 @@ package ru.netology.statsview.ui
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
 import android.graphics.RectF
@@ -41,8 +42,6 @@ class StatsView @JvmOverloads constructor(
     }
 
 
-    private var progress = 0f
-    private var valueAnimator: ValueAnimator? = null
 
     var data: List<Float> = emptyList()
         set(value) {
@@ -53,8 +52,10 @@ class StatsView @JvmOverloads constructor(
             update()
         }
 
-
+    private var alphaValue = 255
     private var rotationAngle = 0f
+    private var progress = 0f
+    private var valueAnimator: ValueAnimator? = null
     private var total: Float = 0.0F
     private var percentages: List<Float> = emptyList()
     private var radius = 0F
@@ -100,12 +101,11 @@ class StatsView @JvmOverloads constructor(
             it.cancel()
         }
 
-        progress = 0f
-
         valueAnimator = ValueAnimator.ofFloat(0f, 360f).apply {
             addUpdateListener { anim ->
                 progress = anim.animatedFraction // Если прогресс должен отслеживать долю анимации
                 rotationAngle = anim.animatedValue as Float // Угол поворота
+                alphaValue = (255 * progress).toInt()
                 invalidate() // Запрашиваем перерисовку
             }
             duration = 5000 // Продолжительность анимации
@@ -122,8 +122,6 @@ class StatsView @JvmOverloads constructor(
 
 
     override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas) // Не забывайте вызывать super.onDraw
-
         if (data.isEmpty()) {
             return
         }
@@ -136,7 +134,8 @@ class StatsView @JvmOverloads constructor(
 
         for ((index, datum) in data.withIndex()) {
             val angle = 360f * datum
-            paint.color = colorsList.getOrNull(index) ?: generateRandomColor()
+            val color = colorsList.getOrNull(index) ?: generateRandomColor()
+            paint.color = Color.argb(alphaValue, Color.red(color), Color.green(color), Color.blue(color)) // Установка цвета с альфой
             canvas.drawArc(oval, startFrom, angle * progress, false, paint)
             startFrom += angle
         }
